@@ -18,60 +18,60 @@ interface AdContent {
 
 const ads: AdContent[] = [
   {
-    title: "Discover Amazing Travel Destinations",
-    description: "Explore the world's most beautiful places with our comprehensive travel guide. From exotic beaches to mountain adventures, find your next perfect vacation spot.",
-    category: "Travel",
+    title: "Nike - Just Do It",
+    description: "Experience the power of determination with Nike's latest athletic gear. Push your limits and achieve greatness with every step.",
+    category: "Sports & Fitness",
     duration: 15,
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+    videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4"
   },
   {
-    title: "Revolutionary Fitness Program",
-    description: "Transform your body in just 30 days with our scientifically proven workout system. Join millions who have already achieved their fitness goals.",
-    category: "Health & Fitness",
+    title: "Coca-Cola - Taste the Feeling",
+    description: "Refresh your world with the classic taste of Coca-Cola. Share happiness and create unforgettable moments with friends and family.",
+    category: "Food & Beverage",
     duration: 15,
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+    videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4"
   },
   {
-    title: "Master Digital Marketing",
-    description: "Learn the secrets of successful online marketing from industry experts. Boost your business with proven strategies and techniques.",
-    category: "Business",
-    duration: 15,
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
-  },
-  {
-    title: "Smart Home Technology",
-    description: "Upgrade your living space with cutting-edge smart home devices. Control everything from your smartphone and save energy costs.",
+    title: "Apple iPhone - Think Different",
+    description: "Discover the future of technology with the latest iPhone. Revolutionary features that change how you connect, create, and explore.",
     category: "Technology",
     duration: 15,
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
+    videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4"
   },
   {
-    title: "Gourmet Cooking Masterclass",
-    description: "Become a chef in your own kitchen with professional cooking techniques. Learn to create restaurant-quality meals at home.",
-    category: "Food & Cooking",
+    title: "McDonald's - I'm Lovin' It",
+    description: "Satisfy your cravings with McDonald's delicious menu. Fresh ingredients, bold flavors, and the taste you love.",
+    category: "Food & Beverage",
     duration: 15,
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
+    videoUrl: "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
   },
   {
-    title: "Investment Strategies for Beginners",
-    description: "Start building wealth today with proven investment strategies. Learn from financial experts and secure your future.",
-    category: "Finance",
+    title: "BMW - The Ultimate Driving Machine",
+    description: "Experience luxury and performance like never before. BMW's precision engineering delivers the ultimate driving experience.",
+    category: "Automotive",
     duration: 15,
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
+    videoUrl: "https://file-examples.com/storage/fe68c8777d66f447a9512b4/2017/10/file_example_MP4_480_1_5MG.mp4"
   },
   {
-    title: "Learn a New Language Fast",
-    description: "Master any language in just 30 days with our revolutionary learning method. Speak confidently with native speakers.",
-    category: "Education",
+    title: "Samsung Galaxy - Do What You Can't",
+    description: "Unleash your potential with Samsung Galaxy's innovative features. Capture, create, and connect in ways you never imagined.",
+    category: "Technology",
     duration: 15,
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
+    videoUrl: "https://file-examples.com/storage/fe68c8777d66f447a9512b4/2017/10/file_example_MP4_640_3MG.mp4"
   },
   {
-    title: "Gaming Setup Essentials",
-    description: "Build the ultimate gaming setup with the latest hardware and accessories. Dominate your favorite games like never before.",
-    category: "Gaming",
+    title: "Netflix - See What's Next",
+    description: "Discover unlimited entertainment with Netflix. Binge-watch your favorite shows and discover new worlds of storytelling.",
+    category: "Entertainment",
     duration: 15,
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"
+    videoUrl: "https://file-examples.com/storage/fe68c8777d66f447a9512b4/2017/10/file_example_MP4_1280_10MG.mp4"
+  },
+  {
+    title: "Adidas - Impossible is Nothing",
+    description: "Break through barriers and achieve the impossible. Adidas gear empowers athletes to reach new heights of performance.",
+    category: "Sports & Fitness",
+    duration: 15,
+    videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4"
   }
 ];
 
@@ -155,14 +155,19 @@ const RewardApp: React.FC = () => {
     setVideoRef(video);
     if (video) {
       video.addEventListener('loadeddata', () => {
-        video.play().catch(console.error);
-      });
-      
-      video.addEventListener('timeupdate', () => {
-        // Allow skipping after 10 seconds
-        if (video.currentTime >= 10) {
-          setCanSkip(true);
-        }
+        // Unmute and play with sound
+        video.muted = false;
+        video.volume = 0.7;
+        video.play().catch(() => {
+          // If autoplay with sound fails, try muted first then unmute
+          video.muted = true;
+          video.play().then(() => {
+            setTimeout(() => {
+              video.muted = false;
+              video.volume = 0.7;
+            }, 1000);
+          }).catch(console.error);
+        });
       });
       
       video.addEventListener('ended', () => {
@@ -174,11 +179,6 @@ const RewardApp: React.FC = () => {
     }
   };
 
-  const handleSkipAd = () => {
-    if (canSkip) {
-      setAdTimeRemaining(0);
-    }
-  };
   // Load user data on component mount
   useEffect(() => {
     const savedUser = localStorage.getItem('rewardUser');
@@ -311,19 +311,24 @@ const RewardApp: React.FC = () => {
   // Login Page
   if (currentPage === 'login') {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-gray-800 rounded-xl shadow-2xl p-8 border border-gray-700">
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 flex items-center justify-center px-4 relative">
+        <div className="absolute inset-0 bg-purple-900/20"></div>
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        <div className="max-w-md w-full bg-gray-900/80 backdrop-blur-xl rounded-xl shadow-2xl p-8 border border-purple-500/30 relative z-10">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-white mb-2">🎁 Reward System</h1>
-            <p className="text-gray-400">Login to your reward account</p>
-            <p className="text-gray-500 text-sm">If not registered, create one</p>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">🎁 Reward System</h1>
+            <p className="text-purple-300">Login to your reward account</p>
+            <p className="text-purple-400 text-sm">If not registered, create one</p>
           </div>
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
+              <label className="block text-sm font-medium text-purple-300 mb-2">Email Address</label>
               <input
                 type="email"
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full bg-gray-800/50 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent backdrop-blur-sm"
                 value={loginForm.email}
                 onChange={e => setLoginForm({...loginForm, email: e.target.value})}
                 placeholder="Enter your email"
@@ -331,10 +336,10 @@ const RewardApp: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+              <label className="block text-sm font-medium text-purple-300 mb-2">Password</label>
               <input
                 type="password"
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full bg-gray-800/50 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent backdrop-blur-sm"
                 value={loginForm.password}
                 onChange={e => setLoginForm({...loginForm, password: e.target.value})}
                 placeholder="Enter your password (min 6 characters)"
@@ -343,13 +348,13 @@ const RewardApp: React.FC = () => {
               />
             </div>
             {loginError && (
-              <div className="bg-red-900 border border-red-700 rounded-lg p-3 text-red-300 text-sm">
+              <div className="bg-red-900/50 border border-red-500/30 rounded-lg p-3 text-red-300 text-sm backdrop-blur-sm">
                 {loginError}
               </div>
             )}
             <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 transform hover:scale-105"
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg shadow-purple-500/25"
             >
               Login / Sign Up
             </button>
@@ -358,15 +363,15 @@ const RewardApp: React.FC = () => {
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-600"></div>
+                <div className="w-full border-t border-purple-500/30"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gray-800 text-gray-400">Or continue with</span>
+                <span className="px-2 bg-gray-900/80 text-purple-300">Or continue with</span>
               </div>
             </div>
             <button
               onClick={handleGoogleLogin}
-              className="mt-4 w-full bg-white hover:bg-gray-100 text-gray-900 font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
+              className="mt-4 w-full bg-white/90 hover:bg-white text-gray-900 font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 backdrop-blur-sm shadow-lg"
             >
               <span>🔍</span>
               <span>Continue with Google</span>
@@ -380,18 +385,23 @@ const RewardApp: React.FC = () => {
   // OTP Verification Page
   if (currentPage === 'otp') {
     return (
-      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-gray-800 rounded-xl shadow-2xl p-8 border border-gray-700">
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 text-white flex items-center justify-center px-4 relative">
+        <div className="absolute inset-0 bg-purple-900/20"></div>
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        <div className="max-w-md w-full bg-gray-900/80 backdrop-blur-xl rounded-xl shadow-2xl p-8 border border-purple-500/30 relative z-10">
           <h1 className="text-2xl font-bold mb-6 text-center">📱 OTP Verification</h1>
-          <p className="text-gray-400 text-center mb-6">
+          <p className="text-purple-300 text-center mb-6">
             Enter the 6-digit OTP sent to {withdrawalForm.phoneNumber}
           </p>
           <form onSubmit={handleOtpVerification} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">OTP Code</label>
+              <label className="block text-sm font-medium text-purple-300 mb-2">OTP Code</label>
               <input
                 type="text"
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white text-center text-2xl font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gray-800/50 border border-purple-500/30 rounded-lg px-4 py-3 text-white text-center text-2xl font-mono focus:outline-none focus:ring-2 focus:ring-purple-500 backdrop-blur-sm"
                 value={otpCode}
                 onChange={e => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                 placeholder="000000"
@@ -400,25 +410,25 @@ const RewardApp: React.FC = () => {
               />
             </div>
             {otpError && (
-              <div className="bg-red-900 border border-red-700 rounded-lg p-3 text-red-300 text-sm">
+              <div className="bg-red-900/50 border border-red-500/30 rounded-lg p-3 text-red-300 text-sm backdrop-blur-sm">
                 {otpError}
               </div>
             )}
             {withdrawalMessage && (
-              <div className="bg-blue-900 border border-blue-700 rounded-lg p-3 text-blue-300 text-sm">
+              <div className="bg-blue-900/50 border border-blue-500/30 rounded-lg p-3 text-blue-300 text-sm backdrop-blur-sm">
                 {withdrawalMessage}
               </div>
             )}
             <button
               type="submit"
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200"
+              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-lg shadow-green-500/25"
             >
               Verify & Withdraw
             </button>
             <button
               type="button"
               onClick={() => setCurrentPage('withdraw')}
-              className="w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200"
+              className="w-full bg-gray-700/50 hover:bg-gray-600/50 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 backdrop-blur-sm"
             >
               Back to Withdrawal
             </button>
@@ -431,96 +441,74 @@ const RewardApp: React.FC = () => {
   // Ad Watching Page
   if (currentPage === 'ad' && currentAd) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white">
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 text-white relative">
+        <div className="absolute inset-0 bg-purple-900/20"></div>
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
         {/* Header */}
-        <div className="bg-gray-800 p-4 border-b border-gray-700">
+        <div className="bg-gray-900/80 backdrop-blur-xl p-4 border-b border-purple-500/30 relative z-10">
           <div className="flex justify-between items-center">
             <h1 className="text-xl font-bold">📺 Advertisement</h1>
             <div className="flex items-center space-x-4">
-              <div className="text-red-400 font-mono text-lg bg-red-900 px-3 py-1 rounded-lg">
+              <div className="text-red-400 font-mono text-lg bg-red-900/50 px-3 py-1 rounded-lg backdrop-blur-sm">
                 ⏱️ {formatTime(adTimeRemaining)}
               </div>
-              <div className="text-yellow-400">💰 {user?.coins} coins</div>
+              <div className="text-yellow-400 bg-yellow-900/30 px-3 py-1 rounded-lg backdrop-blur-sm">💰 {user?.coins} coins</div>
             </div>
           </div>
         </div>
 
         {/* Ad Content */}
-        <div className="max-w-4xl mx-auto p-8">
-          <div className="bg-gray-800 rounded-xl p-6 mb-6 border border-gray-700">
+        <div className="max-w-4xl mx-auto p-8 relative z-10">
+          <div className="bg-gray-900/80 backdrop-blur-xl rounded-xl p-6 mb-6 border border-purple-500/30">
             <div className="flex items-center justify-between mb-4">
-              <div className="text-sm text-blue-400 bg-blue-900 px-3 py-1 rounded-full">
+              <div className="text-sm text-blue-400 bg-blue-900/50 px-3 py-1 rounded-full backdrop-blur-sm">
                 {currentAd.category}
               </div>
-              <div className="text-sm text-gray-400">
+              <div className="text-sm text-purple-300">
                 Ad {user?.adsWatched + 1} of ∞
               </div>
             </div>
             <h2 className="text-2xl font-bold mb-3 text-white">{currentAd.title}</h2>
-            <p className="text-gray-300 text-base leading-relaxed">{currentAd.description}</p>
+            <p className="text-purple-200 text-base leading-relaxed">{currentAd.description}</p>
           </div>
 
           {/* Video Player */}
-          <div className="relative bg-black rounded-xl overflow-hidden mb-6 border-2 border-gray-700">
+          <div className="relative bg-black rounded-xl overflow-hidden mb-6 border-2 border-purple-500/30 shadow-2xl shadow-purple-500/20">
             <video
               ref={handleVideoRef}
               className="w-full aspect-video"
-              controls={false}
+              controls={true}
               autoPlay
-              muted
+              muted={false}
               playsInline
-              onContextMenu={(e) => e.preventDefault()}
-              style={{ pointerEvents: 'none' }}
+              controlsList="nodownload nofullscreen noremoteplayback"
+              disablePictureInPicture
             >
               <source src={currentAd.videoUrl} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
             
             {/* Video Overlay */}
-            <div className="absolute inset-0 bg-black/20 pointer-events-none">
+            <div className="absolute inset-0 bg-gradient-to-t from-purple-900/30 to-transparent pointer-events-none">
               {/* Timer Overlay */}
-              <div className="absolute top-4 right-4 bg-black/80 text-white px-3 py-2 rounded-lg font-mono">
+              <div className="absolute top-4 right-4 bg-purple-900/80 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-mono border border-purple-500/30">
                 ⏱️ {formatTime(adTimeRemaining)}
               </div>
-              
-              {/* Skip Button */}
-              {canSkip && (
-                <div className="absolute bottom-4 right-4">
-                  <button
-                    onClick={handleSkipAd}
-                    className="bg-gray-800/90 hover:bg-gray-700/90 text-white px-4 py-2 rounded-lg font-semibold transition-colors pointer-events-auto"
-                  >
-                    Skip Ad →
-                  </button>
-                </div>
-              )}
-              
-              {/* Cannot Skip Warning */}
-              {!canSkip && adTimeRemaining > 5 && (
-                <div className="absolute bottom-4 right-4 bg-red-900/90 text-red-300 px-4 py-2 rounded-lg text-sm">
-                  ⚠️ Cannot skip yet
-                </div>
-              )}
             </div>
-            
-            {/* Prevent right-click and other interactions */}
-            <div 
-              className="absolute inset-0 pointer-events-auto"
-              onContextMenu={(e) => e.preventDefault()}
-              onDoubleClick={(e) => e.preventDefault()}
-              style={{ cursor: 'default' }}
-            />
           </div>
 
           {/* Video Controls Info */}
-          <div className="bg-gray-800 rounded-lg p-4 mb-6 border border-gray-700">
+          <div className="bg-gray-900/80 backdrop-blur-xl rounded-lg p-4 mb-6 border border-purple-500/30">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <div className="text-blue-400">
+                <div className="text-purple-400">
                   📺 Video Advertisement
                 </div>
-                <div className="text-gray-400 text-sm">
-                  {canSkip ? '✅ Can skip after 10s' : '⏳ Must watch 10s minimum'}
+                <div className="text-purple-300 text-sm">
+                  🎵 Audio enabled for realistic experience
                 </div>
               </div>
               <div className="text-green-400 text-sm">
@@ -530,12 +518,12 @@ const RewardApp: React.FC = () => {
           </div>
 
           {/* Progress Bar */}
-          <div className="bg-gray-700 rounded-full h-4 mb-6 border border-gray-600">
+          <div className="bg-gray-800/50 rounded-full h-4 mb-6 border border-purple-500/30 backdrop-blur-sm">
             <div 
-              className="bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 h-4 rounded-full transition-all duration-1000 flex items-center justify-end pr-2"
+              className="bg-gradient-to-r from-purple-500 via-pink-500 to-green-500 h-4 rounded-full transition-all duration-1000 flex items-center justify-end pr-2 shadow-lg shadow-purple-500/25"
               style={{ width: `${((15 - adTimeRemaining) / 15) * 100}%` }}
             >
-              {adTimeRemaining <= 10 && (
+              {adTimeRemaining <= 5 && (
                 <span className="text-white text-xs font-bold">
                   {Math.round(((15 - adTimeRemaining) / 15) * 100)}%
                 </span>
@@ -543,15 +531,15 @@ const RewardApp: React.FC = () => {
             </div>
           </div>
 
-          <div className="text-center text-gray-400 bg-gray-800 p-4 rounded-lg border border-gray-700">
+          <div className="text-center text-purple-300 bg-gray-900/80 backdrop-blur-xl p-4 rounded-lg border border-purple-500/30">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               <div className="text-center">
-                <div className="text-blue-400 mb-1">📺 Watch Time</div>
-                <div>Minimum 10 seconds</div>
+                <div className="text-purple-400 mb-1">📺 Watch Time</div>
+                <div>Full 15 seconds required</div>
               </div>
               <div className="text-center">
-                <div className="text-yellow-400 mb-1">⚠️ Warning</div>
-                <div>Don't close this page</div>
+                <div className="text-pink-400 mb-1">🎵 Audio</div>
+                <div>Real advertisement with sound</div>
               </div>
               <div className="text-center">
                 <div className="text-green-400 mb-1">💰 Reward</div>
@@ -567,23 +555,28 @@ const RewardApp: React.FC = () => {
   // Withdrawal Page
   if (currentPage === 'withdraw') {
     return (
-      <div className="min-h-screen bg-gray-900 text-white">
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 text-white relative">
+        <div className="absolute inset-0 bg-purple-900/20"></div>
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
         {/* Header */}
-        <div className="bg-gray-800 p-4 border-b border-gray-700">
+        <div className="bg-gray-900/80 backdrop-blur-xl p-4 border-b border-purple-500/30 relative z-10">
           <div className="flex justify-between items-center">
             <button 
               onClick={() => setCurrentPage('dashboard')}
-              className="text-blue-400 hover:text-blue-300 flex items-center space-x-2 transition-colors"
+              className="text-purple-400 hover:text-purple-300 flex items-center space-x-2 transition-colors"
             >
               <span>←</span>
               <span>Back to Dashboard</span>
             </button>
             <div className="flex items-center space-x-4">
-              <span className="text-yellow-400 bg-yellow-900 px-3 py-1 rounded-lg">💰 {user?.coins} coins</span>
-              <span className="text-gray-300">{user?.email}</span>
+              <span className="text-yellow-400 bg-yellow-900/50 px-3 py-1 rounded-lg backdrop-blur-sm">💰 {user?.coins} coins</span>
+              <span className="text-purple-300">{user?.email}</span>
               <button 
                 onClick={handleLogout} 
-                className="text-red-400 hover:text-red-300 bg-red-900 px-3 py-1 rounded-lg transition-colors"
+                className="text-red-400 hover:text-red-300 bg-red-900/50 px-3 py-1 rounded-lg transition-colors backdrop-blur-sm"
               >
                 Logout
               </button>
@@ -592,11 +585,11 @@ const RewardApp: React.FC = () => {
         </div>
 
         {/* Withdrawal Form */}
-        <div className="max-w-md mx-auto p-8">
+        <div className="max-w-md mx-auto p-8 relative z-10">
           <h1 className="text-3xl font-bold mb-6 text-center">💳 Withdraw Coins</h1>
           
           {user && user.coins < 1 && (
-            <div className="bg-red-900 border border-red-700 rounded-lg p-4 mb-6">
+            <div className="bg-red-900/50 border border-red-500/30 rounded-lg p-4 mb-6 backdrop-blur-sm">
               <h3 className="text-red-300 font-bold mb-2">⚠️ Minimum Withdrawal Required</h3>
               <p className="text-red-300">You need at least 100 coins to withdraw for the first time.</p>
               <p className="text-red-400 text-sm mt-1">
@@ -607,10 +600,10 @@ const RewardApp: React.FC = () => {
 
           <form onSubmit={handleWithdrawalSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
+              <label className="block text-sm font-medium text-purple-300 mb-2">Email Address</label>
               <input
                 type="email"
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full bg-gray-800/50 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent backdrop-blur-sm"
                 value={withdrawalForm.email}
                 onChange={e => setWithdrawalForm({...withdrawalForm, email: e.target.value})}
                 placeholder="your@email.com"
@@ -618,10 +611,10 @@ const RewardApp: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Phone Number</label>
+              <label className="block text-sm font-medium text-purple-300 mb-2">Phone Number</label>
               <input
                 type="tel"
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full bg-gray-800/50 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent backdrop-blur-sm"
                 value={withdrawalForm.phoneNumber}
                 onChange={e => setWithdrawalForm({...withdrawalForm, phoneNumber: e.target.value})}
                 placeholder="+1 234 567 8900"
@@ -629,10 +622,10 @@ const RewardApp: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Cardholder Name</label>
+              <label className="block text-sm font-medium text-purple-300 mb-2">Cardholder Name</label>
               <input
                 type="text"
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full bg-gray-800/50 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent backdrop-blur-sm"
                 value={withdrawalForm.cardholderName}
                 onChange={e => setWithdrawalForm({...withdrawalForm, cardholderName: e.target.value})}
                 placeholder="John Doe"
@@ -640,10 +633,10 @@ const RewardApp: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Card Number</label>
+              <label className="block text-sm font-medium text-purple-300 mb-2">Card Number</label>
               <input
                 type="text"
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                className="w-full bg-gray-800/50 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono backdrop-blur-sm"
                 value={withdrawalForm.cardNumber}
                 onChange={e => {
                   const value = e.target.value.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ');
@@ -656,10 +649,10 @@ const RewardApp: React.FC = () => {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Expiry Date</label>
+                <label className="block text-sm font-medium text-purple-300 mb-2">Expiry Date</label>
                 <input
                   type="text"
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                  className="w-full bg-gray-800/50 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono backdrop-blur-sm"
                   value={withdrawalForm.expiryDate}
                   onChange={e => {
                     const value = e.target.value.replace(/\D/g, '').replace(/(\d{2})(\d)/, '$1/$2');
@@ -671,10 +664,10 @@ const RewardApp: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">CVV</label>
+                <label className="block text-sm font-medium text-purple-300 mb-2">CVV</label>
                 <input
                   type="text"
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                  className="w-full bg-gray-800/50 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono backdrop-blur-sm"
                   value={withdrawalForm.cvv}
                   onChange={e => {
                     const value = e.target.value.replace(/\D/g, '');
@@ -690,14 +683,14 @@ const RewardApp: React.FC = () => {
             <button
               type="submit"
               disabled={!user || user.coins < 100}
-              className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 transform hover:scale-105 disabled:hover:scale-100"
+              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:hover:scale-100 shadow-lg shadow-green-500/25"
             >
               {user && user.coins >= 100 ? 'Send OTP & Proceed' : 'Need 100 Coins to Withdraw'}
             </button>
           </form>
 
           {withdrawalMessage && (
-            <div className="mt-4 p-4 bg-green-900 border border-green-700 rounded-lg text-green-300">
+            <div className="mt-4 p-4 bg-green-900/50 border border-green-500/30 rounded-lg text-green-300 backdrop-blur-sm">
               ✅ {withdrawalMessage}
             </div>
           )}
@@ -708,10 +701,15 @@ const RewardApp: React.FC = () => {
 
   // Dashboard Page
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 text-white relative">
+      <div className="absolute inset-0 bg-purple-900/20"></div>
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
       {/* Notification */}
       {showNotification && (
-        <div className="fixed top-4 right-4 bg-green-600 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm animate-pulse">
+        <div className="fixed top-4 right-4 bg-green-600/90 backdrop-blur-xl text-white p-4 rounded-lg shadow-lg z-50 max-w-sm animate-pulse border border-green-500/30">
           <div className="flex items-center space-x-2">
             <span className="text-2xl">🎉</span>
             <div>
@@ -723,17 +721,17 @@ const RewardApp: React.FC = () => {
       )}
 
       {/* Header with Profile */}
-      <div className="bg-gray-800 p-4 border-b border-gray-700">
+      <div className="bg-gray-900/80 backdrop-blur-xl p-4 border-b border-purple-500/30 relative z-10">
         <div className="flex justify-between items-center">
           {/* Left side - Progress Tracker */}
           <div className="flex items-center space-x-4">
-            <div className="bg-gray-700 px-4 py-2 rounded-lg border border-gray-600">
+            <div className="bg-gray-800/50 px-4 py-2 rounded-lg border border-purple-500/30 backdrop-blur-sm">
               <div className="text-yellow-400 font-bold text-lg">
                 💰 {user?.coins || 0}/1000
               </div>
-              <div className="text-xs text-gray-400">Coins Collected</div>
+              <div className="text-xs text-purple-300">Coins Collected</div>
             </div>
-            <div className="bg-blue-900 px-3 py-2 rounded-lg border border-blue-700">
+            <div className="bg-blue-900/50 px-3 py-2 rounded-lg border border-blue-500/30 backdrop-blur-sm">
               <div className="text-blue-300 font-semibold">
                 🎯 100 coins (checkpoint)
               </div>
@@ -746,12 +744,12 @@ const RewardApp: React.FC = () => {
             <div className="text-yellow-400 bg-yellow-900 px-3 py-2 rounded-lg font-semibold">
               💰 {user?.coins} coins
             </div>
-            <div className="bg-gray-700 px-3 py-2 rounded-lg">
-              <span className="text-gray-300 text-sm">👤 {user?.email}</span>
+            <div className="bg-gray-800/50 px-3 py-2 rounded-lg backdrop-blur-sm border border-purple-500/30">
+              <span className="text-purple-300 text-sm">👤 {user?.email}</span>
             </div>
             <button 
               onClick={handleLogout} 
-              className="text-red-400 hover:text-red-300 bg-red-900 px-3 py-2 rounded-lg transition-colors"
+              className="text-red-400 hover:text-red-300 bg-red-900/50 px-3 py-2 rounded-lg transition-colors backdrop-blur-sm"
             >
               Logout
             </button>
@@ -760,30 +758,30 @@ const RewardApp: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto p-8">
+      <div className="max-w-4xl mx-auto p-8 relative z-10">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+          <div className="bg-gray-900/80 backdrop-blur-xl rounded-xl p-6 border border-purple-500/30">
             <div className="text-center">
               <div className="text-3xl mb-2">💰</div>
               <div className="text-2xl font-bold text-yellow-400">{user?.coins}</div>
-              <div className="text-gray-400">Total Coins</div>
+              <div className="text-purple-300">Total Coins</div>
             </div>
           </div>
-          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+          <div className="bg-gray-900/80 backdrop-blur-xl rounded-xl p-6 border border-purple-500/30">
             <div className="text-center">
               <div className="text-3xl mb-2">📺</div>
               <div className="text-2xl font-bold text-blue-400">{user?.adsWatched}</div>
-              <div className="text-gray-400">Ads Watched</div>
+              <div className="text-purple-300">Ads Watched</div>
             </div>
           </div>
-          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+          <div className="bg-gray-900/80 backdrop-blur-xl rounded-xl p-6 border border-purple-500/30">
             <div className="text-center">
               <div className="text-3xl mb-2">🎯</div>
               <div className="text-2xl font-bold text-green-400">
                 {user && user.coins >= 100 ? '✅' : `${user ? 100 - user.coins : 100}`}
               </div>
-              <div className="text-gray-400">
+              <div className="text-purple-300">
                 {user && user.coins >= 100 ? 'Can Withdraw' : 'Coins to Withdraw'}
               </div>
             </div>
@@ -792,15 +790,15 @@ const RewardApp: React.FC = () => {
 
         {/* Progress to Withdrawal */}
         {user && user.coins < 100 && (
-          <div className="bg-gray-800 rounded-xl p-6 mb-8 border border-gray-700">
+          <div className="bg-gray-900/80 backdrop-blur-xl rounded-xl p-6 mb-8 border border-purple-500/30">
             <h3 className="text-lg font-bold mb-4">🎯 Progress to First Withdrawal</h3>
-            <div className="bg-gray-700 rounded-full h-4 mb-2">
+            <div className="bg-gray-800/50 rounded-full h-4 mb-2 border border-purple-500/20">
               <div 
-                className="bg-gradient-to-r from-blue-500 to-green-500 h-4 rounded-full transition-all duration-500"
+                className="bg-gradient-to-r from-purple-500 via-pink-500 to-green-500 h-4 rounded-full transition-all duration-500 shadow-lg shadow-purple-500/25"
                 style={{ width: `${(user.coins / 100) * 100}%` }}
               ></div>
             </div>
-            <div className="flex justify-between text-sm text-gray-400">
+            <div className="flex justify-between text-sm text-purple-300">
               <span>{user.coins} coins earned</span>
               <span>{100 - user.coins} coins remaining</span>
             </div>
@@ -811,20 +809,20 @@ const RewardApp: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <button
             onClick={handleWatchAd}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-6 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 border-2 border-blue-500"
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-6 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 border-2 border-purple-500/50 shadow-lg shadow-purple-500/25"
           >
             <div className="text-4xl mb-2">📺</div>
             <div className="text-xl mb-1">Watch Advertisement</div>
-            <div className="text-sm opacity-80">Earn 1 coin • 15 seconds</div>
+            <div className="text-sm opacity-80">Earn 1 coin • 15 seconds • With Sound</div>
           </button>
 
           <button
             onClick={() => setCurrentPage('withdraw')}
             disabled={!user || user.coins < 100}
-            className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-6 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 disabled:hover:scale-100 border-2 border-green-500 disabled:border-gray-500"
+            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed text-white font-bold py-6 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 disabled:hover:scale-100 border-2 border-green-500/50 disabled:border-gray-500/50 shadow-lg shadow-green-500/25"
           >
             <div className="text-4xl mb-2">💳</div>
-            <div className="text-xl mb-100">Withdraw Coins</div>
+            <div className="text-xl mb-1">Withdraw Coins</div>
             <div className="text-sm opacity-80">
               {user && user.coins >= 100 ? 'Ready to withdraw!' : 'Need 100 coins minimum'}
             </div>
@@ -832,23 +830,23 @@ const RewardApp: React.FC = () => {
         </div>
 
         {/* Instructions */}
-        <div className="mt-8 bg-gray-800 rounded-xl p-6 border border-gray-700">
+        <div className="mt-8 bg-gray-900/80 backdrop-blur-xl rounded-xl p-6 border border-purple-500/30">
           <h3 className="text-lg font-bold mb-4">📋 How it Works</h3>
-          <div className="space-y-2 text-gray-300">
+          <div className="space-y-2 text-purple-200">
             <div className="flex items-center space-x-3">
-              <span className="text-blue-400">1️⃣</span>
-              <span>Watch 15-second advertisements to earn coins</span>
+              <span className="text-purple-400">1️⃣</span>
+              <span>Watch 15-second video advertisements with sound to earn coins</span>
             </div>
             <div className="flex items-center space-x-3">
-              <span className="text-blue-400">2️⃣</span>
+              <span className="text-purple-400">2️⃣</span>
               <span>Each completed ad gives you 1 coin</span>
             </div>
             <div className="flex items-center space-x-3">
-              <span className="text-blue-400">3️⃣</span>
+              <span className="text-purple-400">3️⃣</span>
               <span>Collect 100 coins to unlock withdrawal</span>
             </div>
             <div className="flex items-center space-x-3">
-              <span className="text-blue-400">4️⃣</span>
+              <span className="text-purple-400">4️⃣</span>
               <span>Provide details and verify OTP to withdraw</span>
             </div>
           </div>
