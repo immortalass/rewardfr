@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 // Declare Google AdSense types
 declare global {
@@ -19,7 +19,7 @@ interface AdContent {
   title: string;
   description: string;
   category: string;
-  duration: number; // in seconds (15 seconds)
+  duration: number;
   videoUrl: string;
 }
 
@@ -44,41 +44,6 @@ const ads: AdContent[] = [
     category: "Technology",
     duration: 15,
     videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4"
-  },
-  {
-    title: "McDonald's - I'm Lovin' It",
-    description: "Satisfy your cravings with McDonald's delicious menu. Fresh ingredients, bold flavors, and the taste you love.",
-    category: "Food & Beverage",
-    duration: 15,
-    videoUrl: "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
-  },
-  {
-    title: "BMW - The Ultimate Driving Machine",
-    description: "Experience luxury and performance like never before. BMW's precision engineering delivers the ultimate driving experience.",
-    category: "Automotive",
-    duration: 15,
-    videoUrl: "https://file-examples.com/storage/fe68c8777d66f447a9512b4/2017/10/file_example_MP4_480_1_5MG.mp4"
-  },
-  {
-    title: "Samsung Galaxy - Do What You Can't",
-    description: "Unleash your potential with Samsung Galaxy's innovative features. Capture, create, and connect in ways you never imagined.",
-    category: "Technology",
-    duration: 15,
-    videoUrl: "https://file-examples.com/storage/fe68c8777d66f447a9512b4/2017/10/file_example_MP4_640_3MG.mp4"
-  },
-  {
-    title: "Netflix - See What's Next",
-    description: "Discover unlimited entertainment with Netflix. Binge-watch your favorite shows and discover new worlds of storytelling.",
-    category: "Entertainment",
-    duration: 15,
-    videoUrl: "https://file-examples.com/storage/fe68c8777d66f447a9512b4/2017/10/file_example_MP4_1280_10MG.mp4"
-  },
-  {
-    title: "Adidas - Impossible is Nothing",
-    description: "Break through barriers and achieve the impossible. Adidas gear empowers athletes to reach new heights of performance.",
-    category: "Sports & Fitness",
-    duration: 15,
-    videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4"
   }
 ];
 
@@ -95,6 +60,7 @@ const RewardApp: React.FC = () => {
   const [currentAd, setCurrentAd] = useState<AdContent | null>(null);
   const [adTimeRemaining, setAdTimeRemaining] = useState(0);
   const [isWatchingAd, setIsWatchingAd] = useState(false);
+  const [canSkip, setCanSkip] = useState(false);
   
   // Withdrawal state
   const [withdrawalForm, setWithdrawalForm] = useState({
@@ -114,6 +80,8 @@ const RewardApp: React.FC = () => {
   const [isAdLoading, setIsAdLoading] = useState(false);
   const [adError, setAdError] = useState('');
   const [adReady, setAdReady] = useState(false);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Timer for ad watching
   useEffect(() => {
@@ -145,7 +113,12 @@ const RewardApp: React.FC = () => {
             }
             
             // Reset video
-            if (videoRef) {
+            if (videoRef.current) {
+              videoRef.current.pause();
+              videoRef.current.currentTime = 0;
+            }
+            return 0;
+          }
           return prev - 1;
         });
       }, 1000);
@@ -260,6 +233,7 @@ const RewardApp: React.FC = () => {
       setIsWatchingAd(true);
       setCurrentPage('ad');
       setAdReady(false);
+      setCanSkip(false);
     } else {
       // Load ad first
       loadRewardedAd();
@@ -519,26 +493,9 @@ const RewardApp: React.FC = () => {
                     <div className="text-4xl mb-4">📺</div>
                     <div className="text-xl font-bold mb-2">Rewarded Video Ad</div>
                     <div className="text-purple-300">Powered by Google AdMob</div>
-                    <div className="text-sm text-purple-400 mt-2">Ad Unit: ca-pub-3689581405597356/6536518954</div>
+                    <div className="text-sm text-purple-400 mt-2">Ad Unit: ca-app-pub-3689581405597356/6536518954</div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Ad Controls Info */}
-          <div className="bg-gray-900/80 backdrop-blur-xl rounded-lg p-4 mb-6 border border-purple-500/30">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="text-purple-400">
-                  📱 Google AdMob Rewarded Video
-                </div>
-                <div className="text-purple-300 text-sm">
-                  🎯 Real advertisement from Google network
-                </div>
-              </div>
-              <div className="text-green-400 text-sm">
-                💰 +1 coin when complete
               </div>
             </div>
           </div>
@@ -614,7 +571,7 @@ const RewardApp: React.FC = () => {
         <div className="max-w-md mx-auto p-8 relative z-10">
           <h1 className="text-3xl font-bold mb-6 text-center">💳 Withdraw Coins</h1>
           
-          {user && user.coins < 1 && (
+          {user && user.coins < 100 && (
             <div className="bg-red-900/50 border border-red-500/30 rounded-lg p-4 mb-6 backdrop-blur-sm">
               <h3 className="text-red-300 font-bold mb-2">⚠️ Minimum Withdrawal Required</h3>
               <p className="text-red-300">You need at least 100 coins to withdraw for the first time.</p>
@@ -900,7 +857,7 @@ const RewardApp: React.FC = () => {
             </div>
             <div className="mt-4 p-3 bg-blue-900/30 rounded-lg border border-blue-500/30">
               <div className="text-blue-300 text-sm">
-                <strong>📱 AdMob Integration:</strong> Using ad unit ID ca-pub-3689581405597356/6536518954 for real Google advertisements
+                <strong>📱 AdMob Integration:</strong> Using ad unit ID ca-app-pub-3689581405597356/6536518954 for real Google advertisements
               </div>
             </div>
           </div>
