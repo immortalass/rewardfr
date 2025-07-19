@@ -115,7 +115,7 @@ const RewardApp: React.FC = () => {
               localStorage.setItem('rewardUser', JSON.stringify(updatedUser));
               
               // Check for checkpoint notification
-              if (newCoins === 2 || newCoins % 2 === 0) {
+              if (newCoins === 100 || newCoins % 100 === 0) {
                 setNotificationMessage(`🎉 Congratulations! You have collected ${newCoins} coins! You may withdraw it now.`);
                 setShowNotification(true);
                 setTimeout(() => setShowNotification(false), 5000);
