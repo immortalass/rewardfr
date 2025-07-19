@@ -15,38 +15,6 @@ interface User {
   phoneNumber?: string;
 }
 
-interface AdContent {
-  title: string;
-  description: string;
-  category: string;
-  duration: number;
-  videoUrl: string;
-}
-
-const ads: AdContent[] = [
-  {
-    title: "Nike - Just Do It",
-    description: "Experience the power of determination with Nike's latest athletic gear. Push your limits and achieve greatness with every step.",
-    category: "Sports & Fitness",
-    duration: 15,
-    videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4"
-  },
-  {
-    title: "Coca-Cola - Taste the Feeling",
-    description: "Refresh your world with the classic taste of Coca-Cola. Share happiness and create unforgettable moments with friends and family.",
-    category: "Food & Beverage",
-    duration: 15,
-    videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4"
-  },
-  {
-    title: "Apple iPhone - Think Different",
-    description: "Discover the future of technology with the latest iPhone. Revolutionary features that change how you connect, create, and explore.",
-    category: "Technology",
-    duration: 15,
-    videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4"
-  }
-];
-
 const RewardApp: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentPage, setCurrentPage] = useState<'login' | 'dashboard' | 'ad' | 'withdraw' | 'otp'>('login');
@@ -57,10 +25,8 @@ const RewardApp: React.FC = () => {
   const [notificationMessage, setNotificationMessage] = useState('');
   
   // Ad watching state
-  const [currentAd, setCurrentAd] = useState<AdContent | null>(null);
   const [adTimeRemaining, setAdTimeRemaining] = useState(0);
   const [isWatchingAd, setIsWatchingAd] = useState(false);
-  const [canSkip, setCanSkip] = useState(false);
   
   // Withdrawal state
   const [withdrawalForm, setWithdrawalForm] = useState({
@@ -93,7 +59,6 @@ const RewardApp: React.FC = () => {
             // Ad finished
             setIsWatchingAd(false);
             setCurrentPage('dashboard');
-            setCanSkip(false);
             if (user) {
               const newCoins = user.coins + 1;
               const updatedUser = {
@@ -219,13 +184,10 @@ const RewardApp: React.FC = () => {
   const handleWatchAd = () => {
     if (adReady) {
       // Show the ad
-      const randomAd = ads[Math.floor(Math.random() * ads.length)];
-      setCurrentAd(randomAd);
-      setAdTimeRemaining(randomAd.duration);
+      setAdTimeRemaining(15);
       setIsWatchingAd(true);
       setCurrentPage('ad');
       setAdReady(false);
-      setCanSkip(false);
     } else {
       // Load ad first
       loadRewardedAd();
@@ -419,7 +381,7 @@ const RewardApp: React.FC = () => {
   }
 
   // Ad Watching Page
-  if (currentPage === 'ad' && currentAd) {
+  if (currentPage === 'ad') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 text-white relative">
         <div className="absolute inset-0 bg-purple-900/20"></div>
@@ -442,19 +404,6 @@ const RewardApp: React.FC = () => {
 
         {/* Ad Content */}
         <div className="max-w-4xl mx-auto p-8 relative z-10">
-          <div className="bg-gray-900/80 backdrop-blur-xl rounded-xl p-6 mb-6 border border-purple-500/30">
-            <div className="flex items-center justify-between mb-4">
-              <div className="text-sm text-blue-400 bg-blue-900/50 px-3 py-1 rounded-full backdrop-blur-sm">
-                {currentAd.category} • AdMob Rewarded Video
-              </div>
-              <div className="text-sm text-purple-300">
-                Ad {user?.adsWatched + 1} of ∞
-              </div>
-            </div>
-            <h2 className="text-2xl font-bold mb-3 text-white">{currentAd.title}</h2>
-            <p className="text-purple-200 text-base leading-relaxed">{currentAd.description}</p>
-          </div>
-
           {/* Google AdMob Ad Container */}
           <div className="relative bg-gray-900/80 backdrop-blur-xl rounded-xl overflow-hidden mb-6 border-2 border-purple-500/30 shadow-2xl shadow-purple-500/20">
             <div className="aspect-video flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
