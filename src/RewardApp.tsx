@@ -115,7 +115,7 @@ const RewardApp: React.FC = () => {
               localStorage.setItem('rewardUser', JSON.stringify(updatedUser));
               
               // Check for checkpoint notification
-              if (newCoins === 100 || newCoins % 100 === 0) {
+              if (newCoins === 1 || newCoins % 1 === 0) {
                 setNotificationMessage(`🎉 Congratulations! You have collected ${newCoins} coins! You may withdraw it now.`);
                 setShowNotification(true);
                 setTimeout(() => setShowNotification(false), 5000);
@@ -206,8 +206,8 @@ const RewardApp: React.FC = () => {
     e.preventDefault();
     if (!user) return;
 
-    if (user.coins < 100) {
-      setWithdrawalMessage('You need at least 100 coins to withdraw for the first time.');
+    if (user.coins < 1) {
+      setWithdrawalMessage('You need at least 1 coin to withdraw for the first time.');
       return;
     }
 
@@ -477,12 +477,12 @@ const RewardApp: React.FC = () => {
         <div className="max-w-md mx-auto p-8">
           <h1 className="text-3xl font-bold mb-6 text-center">💳 Withdraw Coins</h1>
           
-          {user && user.coins < 100 && (
+          {user && user.coins < 1 && (
             <div className="bg-red-900 border border-red-700 rounded-lg p-4 mb-6">
               <h3 className="text-red-300 font-bold mb-2">⚠️ Minimum Withdrawal Required</h3>
-              <p className="text-red-300">You need at least 100 coins to withdraw for the first time.</p>
+              <p className="text-red-300">You need at least 1 coin to withdraw for the first time.</p>
               <p className="text-red-400 text-sm mt-1">
-                Current coins: {user.coins} | Need: {100 - user.coins} more coins
+                Current coins: {user.coins} | Need: {1 - user.coins} more coins
               </p>
             </div>
           )}
@@ -571,10 +571,10 @@ const RewardApp: React.FC = () => {
             
             <button
               type="submit"
-              disabled={!user || user.coins < 100}
+              disabled={!user || user.coins < 1}
               className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 transform hover:scale-105 disabled:hover:scale-100"
             >
-              {user && user.coins >= 100 ? 'Send OTP & Proceed' : 'Need 100 Coins to Withdraw'}
+              {user && user.coins >= 1 ? 'Send OTP & Proceed' : 'Need 1 Coin to Withdraw'}
             </button>
           </form>
 
@@ -617,7 +617,7 @@ const RewardApp: React.FC = () => {
             </div>
             <div className="bg-blue-900 px-3 py-2 rounded-lg border border-blue-700">
               <div className="text-blue-300 font-semibold">
-                🎯 100 coins (checkpoint)
+                🎯 1 coin (checkpoint)
               </div>
               <div className="text-xs text-blue-400">Withdrawal Available</div>
             </div>
@@ -663,28 +663,28 @@ const RewardApp: React.FC = () => {
             <div className="text-center">
               <div className="text-3xl mb-2">🎯</div>
               <div className="text-2xl font-bold text-green-400">
-                {user && user.coins >= 100 ? '✅' : `${user ? 100 - user.coins : 100}`}
+                {user && user.coins >= 1 ? '✅' : `${user ? 1 - user.coins : 1}`}
               </div>
               <div className="text-gray-400">
-                {user && user.coins >= 100 ? 'Can Withdraw' : 'Coins to Withdraw'}
+                {user && user.coins >= 1 ? 'Can Withdraw' : 'Coins to Withdraw'}
               </div>
             </div>
           </div>
         </div>
 
         {/* Progress to Withdrawal */}
-        {user && user.coins < 100 && (
+        {user && user.coins < 1 && (
           <div className="bg-gray-800 rounded-xl p-6 mb-8 border border-gray-700">
             <h3 className="text-lg font-bold mb-4">🎯 Progress to First Withdrawal</h3>
             <div className="bg-gray-700 rounded-full h-4 mb-2">
               <div 
                 className="bg-gradient-to-r from-blue-500 to-green-500 h-4 rounded-full transition-all duration-500"
-                style={{ width: `${(user.coins / 100) * 100}%` }}
+                style={{ width: `${(user.coins / 1) * 100}%` }}
               ></div>
             </div>
             <div className="flex justify-between text-sm text-gray-400">
               <span>{user.coins} coins earned</span>
-              <span>{100 - user.coins} coins remaining</span>
+              <span>{1 - user.coins} coins remaining</span>
             </div>
           </div>
         )}
@@ -702,13 +702,13 @@ const RewardApp: React.FC = () => {
 
           <button
             onClick={() => setCurrentPage('withdraw')}
-            disabled={!user || user.coins < 100}
+            disabled={!user || user.coins < 1}
             className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-6 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 disabled:hover:scale-100 border-2 border-green-500 disabled:border-gray-500"
           >
             <div className="text-4xl mb-2">💳</div>
             <div className="text-xl mb-1">Withdraw Coins</div>
             <div className="text-sm opacity-80">
-              {user && user.coins >= 100 ? 'Ready to withdraw!' : 'Need 100 coins minimum'}
+              {user && user.coins >= 1 ? 'Ready to withdraw!' : 'Need 1 coin minimum'}
             </div>
           </button>
         </div>
@@ -727,7 +727,7 @@ const RewardApp: React.FC = () => {
             </div>
             <div className="flex items-center space-x-3">
               <span className="text-blue-400">3️⃣</span>
-              <span>Collect 100 coins to unlock withdrawal</span>
+              <span>Collect 1 coin to unlock withdrawal</span>
             </div>
             <div className="flex items-center space-x-3">
               <span className="text-blue-400">4️⃣</span>
