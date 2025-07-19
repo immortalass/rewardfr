@@ -13,6 +13,7 @@ interface AdContent {
   description: string;
   category: string;
   duration: number; // in seconds (15 seconds)
+  videoUrl: string;
 }
 
 const ads: AdContent[] = [
@@ -20,49 +21,57 @@ const ads: AdContent[] = [
     title: "Discover Amazing Travel Destinations",
     description: "Explore the world's most beautiful places with our comprehensive travel guide. From exotic beaches to mountain adventures, find your next perfect vacation spot.",
     category: "Travel",
-    duration: 15
+    duration: 15,
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
   },
   {
     title: "Revolutionary Fitness Program",
     description: "Transform your body in just 30 days with our scientifically proven workout system. Join millions who have already achieved their fitness goals.",
     category: "Health & Fitness",
-    duration: 15
+    duration: 15,
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
   },
   {
     title: "Master Digital Marketing",
     description: "Learn the secrets of successful online marketing from industry experts. Boost your business with proven strategies and techniques.",
     category: "Business",
-    duration: 15
+    duration: 15,
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
   },
   {
     title: "Smart Home Technology",
     description: "Upgrade your living space with cutting-edge smart home devices. Control everything from your smartphone and save energy costs.",
     category: "Technology",
-    duration: 15
+    duration: 15,
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
   },
   {
     title: "Gourmet Cooking Masterclass",
     description: "Become a chef in your own kitchen with professional cooking techniques. Learn to create restaurant-quality meals at home.",
     category: "Food & Cooking",
-    duration: 15
+    duration: 15,
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
   },
   {
     title: "Investment Strategies for Beginners",
     description: "Start building wealth today with proven investment strategies. Learn from financial experts and secure your future.",
     category: "Finance",
-    duration: 15
+    duration: 15,
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
   },
   {
     title: "Learn a New Language Fast",
     description: "Master any language in just 30 days with our revolutionary learning method. Speak confidently with native speakers.",
     category: "Education",
-    duration: 15
+    duration: 15,
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
   },
   {
     title: "Gaming Setup Essentials",
     description: "Build the ultimate gaming setup with the latest hardware and accessories. Dominate your favorite games like never before.",
     category: "Gaming",
-    duration: 15
+    duration: 15,
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"
   }
 ];
 
@@ -93,6 +102,10 @@ const RewardApp: React.FC = () => {
   const [otpCode, setOtpCode] = useState('');
   const [generatedOtp, setGeneratedOtp] = useState('');
   const [otpError, setOtpError] = useState('');
+  
+  // Video player state
+  const [videoRef, setVideoRef] = useState<HTMLVideoElement | null>(null);
+  const [canSkip, setCanSkip] = useState(false);
 
   // Timer for ad watching
   useEffect(() => {
@@ -104,6 +117,7 @@ const RewardApp: React.FC = () => {
             // Ad finished
             setIsWatchingAd(false);
             setCurrentPage('dashboard');
+            setCanSkip(false);
             if (user) {
               const newCoins = user.coins + 1;
               const updatedUser = {
@@ -121,6 +135,12 @@ const RewardApp: React.FC = () => {
                 setTimeout(() => setShowNotification(false), 5000);
               }
             }
+            
+            // Reset video
+            if (videoRef) {
+              videoRef.pause();
+              videoRef.currentTime = 0;
+            }
             return 0;
           }
           return prev - 1;
@@ -130,6 +150,35 @@ const RewardApp: React.FC = () => {
     return () => clearInterval(interval);
   }, [isWatchingAd, adTimeRemaining, user]);
 
+  // Video event handlers
+  const handleVideoRef = (video: HTMLVideoElement | null) => {
+    setVideoRef(video);
+    if (video) {
+      video.addEventListener('loadeddata', () => {
+        video.play().catch(console.error);
+      });
+      
+      video.addEventListener('timeupdate', () => {
+        // Allow skipping after 10 seconds
+        if (video.currentTime >= 10) {
+          setCanSkip(true);
+        }
+      });
+      
+      video.addEventListener('ended', () => {
+        // Video ended naturally, complete the ad
+        if (isWatchingAd) {
+          setAdTimeRemaining(0);
+        }
+      });
+    }
+  };
+
+  const handleSkipAd = () => {
+    if (canSkip) {
+      setAdTimeRemaining(0);
+    }
+  };
   // Load user data on component mount
   useEffect(() => {
     const savedUser = localStorage.getItem('rewardUser');
@@ -199,6 +248,7 @@ const RewardApp: React.FC = () => {
     setCurrentAd(randomAd);
     setAdTimeRemaining(randomAd.duration);
     setIsWatchingAd(true);
+    setCanSkip(false);
     setCurrentPage('ad');
   };
 
@@ -397,7 +447,7 @@ const RewardApp: React.FC = () => {
 
         {/* Ad Content */}
         <div className="max-w-4xl mx-auto p-8">
-          <div className="bg-gray-800 rounded-xl p-8 mb-6 border border-gray-700">
+          <div className="bg-gray-800 rounded-xl p-6 mb-6 border border-gray-700">
             <div className="flex items-center justify-between mb-4">
               <div className="text-sm text-blue-400 bg-blue-900 px-3 py-1 rounded-full">
                 {currentAd.category}
@@ -406,18 +456,75 @@ const RewardApp: React.FC = () => {
                 Ad {user?.adsWatched + 1} of ∞
               </div>
             </div>
-            <h2 className="text-3xl font-bold mb-4 text-white">{currentAd.title}</h2>
-            <p className="text-gray-300 text-lg leading-relaxed">{currentAd.description}</p>
+            <h2 className="text-2xl font-bold mb-3 text-white">{currentAd.title}</h2>
+            <p className="text-gray-300 text-base leading-relaxed">{currentAd.description}</p>
           </div>
 
-          {/* Fake Ad Video Player */}
-          <div className="bg-black rounded-xl aspect-video flex items-center justify-center mb-6 border-2 border-gray-700 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-purple-900/20"></div>
-            <div className="text-center z-10">
-              <div className="text-6xl mb-4 animate-pulse">📺</div>
-              <div className="text-2xl text-white font-bold mb-2">Advertisement Playing...</div>
-              <div className="text-lg text-red-400 font-mono bg-black/50 px-4 py-2 rounded-lg">
-                ⚠️ Cannot skip • {formatTime(adTimeRemaining)} remaining
+          {/* Video Player */}
+          <div className="relative bg-black rounded-xl overflow-hidden mb-6 border-2 border-gray-700">
+            <video
+              ref={handleVideoRef}
+              className="w-full aspect-video"
+              controls={false}
+              autoPlay
+              muted
+              playsInline
+              onContextMenu={(e) => e.preventDefault()}
+              style={{ pointerEvents: 'none' }}
+            >
+              <source src={currentAd.videoUrl} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+            
+            {/* Video Overlay */}
+            <div className="absolute inset-0 bg-black/20 pointer-events-none">
+              {/* Timer Overlay */}
+              <div className="absolute top-4 right-4 bg-black/80 text-white px-3 py-2 rounded-lg font-mono">
+                ⏱️ {formatTime(adTimeRemaining)}
+              </div>
+              
+              {/* Skip Button */}
+              {canSkip && (
+                <div className="absolute bottom-4 right-4">
+                  <button
+                    onClick={handleSkipAd}
+                    className="bg-gray-800/90 hover:bg-gray-700/90 text-white px-4 py-2 rounded-lg font-semibold transition-colors pointer-events-auto"
+                  >
+                    Skip Ad →
+                  </button>
+                </div>
+              )}
+              
+              {/* Cannot Skip Warning */}
+              {!canSkip && adTimeRemaining > 5 && (
+                <div className="absolute bottom-4 right-4 bg-red-900/90 text-red-300 px-4 py-2 rounded-lg text-sm">
+                  ⚠️ Cannot skip yet
+                </div>
+              )}
+            </div>
+            
+            {/* Prevent right-click and other interactions */}
+            <div 
+              className="absolute inset-0 pointer-events-auto"
+              onContextMenu={(e) => e.preventDefault()}
+              onDoubleClick={(e) => e.preventDefault()}
+              style={{ cursor: 'default' }}
+            />
+          </div>
+
+          {/* Video Controls Info */}
+          <div className="bg-gray-800 rounded-lg p-4 mb-6 border border-gray-700">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="text-blue-400">
+                  📺 Video Advertisement
+                </div>
+                <div className="text-gray-400 text-sm">
+                  {canSkip ? '✅ Can skip after 10s' : '⏳ Must watch 10s minimum'}
+                </div>
+              </div>
+              <div className="text-green-400 text-sm">
+                💰 +1 coin when complete
               </div>
             </div>
           </div>
@@ -425,7 +532,7 @@ const RewardApp: React.FC = () => {
           {/* Progress Bar */}
           <div className="bg-gray-700 rounded-full h-4 mb-6 border border-gray-600">
             <div 
-              className="bg-gradient-to-r from-blue-500 to-green-500 h-4 rounded-full transition-all duration-1000 flex items-center justify-end pr-2"
+              className="bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 h-4 rounded-full transition-all duration-1000 flex items-center justify-end pr-2"
               style={{ width: `${((15 - adTimeRemaining) / 15) * 100}%` }}
             >
               {adTimeRemaining <= 10 && (
@@ -437,9 +544,20 @@ const RewardApp: React.FC = () => {
           </div>
 
           <div className="text-center text-gray-400 bg-gray-800 p-4 rounded-lg border border-gray-700">
-            <p className="text-lg mb-2">🎯 Please watch the complete advertisement to earn your coin.</p>
-            <p className="text-sm text-red-400">⚠️ Closing this page will cancel your progress and you won't earn the coin.</p>
-            <p className="text-sm text-green-400 mt-2">✨ You'll earn 1 coin after this ad completes!</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div className="text-center">
+                <div className="text-blue-400 mb-1">📺 Watch Time</div>
+                <div>Minimum 10 seconds</div>
+              </div>
+              <div className="text-center">
+                <div className="text-yellow-400 mb-1">⚠️ Warning</div>
+                <div>Don't close this page</div>
+              </div>
+              <div className="text-center">
+                <div className="text-green-400 mb-1">💰 Reward</div>
+                <div>1 coin when complete</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
