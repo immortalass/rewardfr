@@ -92,32 +92,6 @@ const RewardApp: React.FC = () => {
     return () => clearInterval(interval);
   }, [isWatchingAd, adTimeRemaining, user]);
 
-  // Initialize Google AdMob SDK
-  useEffect(() => {
-    // Load Google AdMob SDK
-    const script = document.createElement('script');
-    script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-app-pub-3689581405597356';
-    script.async = true;
-    script.crossOrigin = 'anonymous';
-    document.head.appendChild(script);
-
-    script.onload = () => {
-      if (window.adsbygoogle) {
-        window.adsbygoogle.push({
-          google_ad_client: "ca-app-pub-3689581405597356",
-          enable_page_level_ads: true
-        });
-      }
-    };
-
-    return () => {
-      // Cleanup script on unmount
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-    }
-  }, []);
-
   // Load rewarded video ad
   const loadRewardedAd = () => {
     setIsAdLoading(true);
