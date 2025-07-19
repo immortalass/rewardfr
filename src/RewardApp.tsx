@@ -140,19 +140,11 @@ const RewardApp: React.FC = () => {
     setAdError('');
     
     try {
-      // Push ad configuration to AdSense
-      if (window.adsbygoogle) {
-        window.adsbygoogle.push({
-          google_ad_client: "ca-pub-3689581405597356",
-          enable_page_level_ads: true
-        });
-        
-        // Simulate ad loading (in real implementation, this would be handled by AdMob SDK)
-        setTimeout(() => {
-          setIsAdLoading(false);
-          setAdReady(true);
-        }, 2000);
-      }
+      // Simulate ad loading (in real implementation, this would be handled by AdMob SDK)
+      setTimeout(() => {
+        setIsAdLoading(false);
+        setAdReady(true);
+      }, 2000);
     } catch (error) {
       console.error('Error loading ad:', error);
       setAdError('Failed to load advertisement. Please try again.');
