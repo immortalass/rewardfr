@@ -706,7 +706,7 @@ const RewardApp: React.FC = () => {
             className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-6 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 disabled:hover:scale-100 border-2 border-green-500 disabled:border-gray-500"
           >
             <div className="text-4xl mb-2">💳</div>
-            <div className="text-xl mb-1">Withdraw Coins</div>
+            <div className="text-xl mb-100">Withdraw Coins</div>
             <div className="text-sm opacity-80">
               {user && user.coins >= 100 ? 'Ready to withdraw!' : 'Need 1 coin minimum'}
             </div>
