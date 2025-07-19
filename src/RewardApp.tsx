@@ -571,10 +571,10 @@ const RewardApp: React.FC = () => {
             
             <button
               type="submit"
-              disabled={!user || user.coins < 1}
+              disabled={!user || user.coins < 100}
               className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 transform hover:scale-105 disabled:hover:scale-100"
             >
-              {user && user.coins >= 1 ? 'Send OTP & Proceed' : 'Need 1 Coin to Withdraw'}
+              {user && user.coins >= 100 ? 'Send OTP & Proceed' : 'Need 1 Coin to Withdraw'}
             </button>
           </form>
 
@@ -666,14 +666,14 @@ const RewardApp: React.FC = () => {
                 {user && user.coins >= 1 ? '✅' : `${user ? 1 - user.coins : 1}`}
               </div>
               <div className="text-gray-400">
-                {user && user.coins >= 1 ? 'Can Withdraw' : 'Coins to Withdraw'}
+                {user && user.coins >= 100 ? 'Can Withdraw' : 'Coins to Withdraw'}
               </div>
             </div>
           </div>
         </div>
 
         {/* Progress to Withdrawal */}
-        {user && user.coins < 1 && (
+        {user && user.coins < 100 && (
           <div className="bg-gray-800 rounded-xl p-6 mb-8 border border-gray-700">
             <h3 className="text-lg font-bold mb-4">🎯 Progress to First Withdrawal</h3>
             <div className="bg-gray-700 rounded-full h-4 mb-2">
@@ -702,13 +702,13 @@ const RewardApp: React.FC = () => {
 
           <button
             onClick={() => setCurrentPage('withdraw')}
-            disabled={!user || user.coins < 1}
+            disabled={!user || user.coins < 100}
             className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-6 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 disabled:hover:scale-100 border-2 border-green-500 disabled:border-gray-500"
           >
             <div className="text-4xl mb-2">💳</div>
             <div className="text-xl mb-1">Withdraw Coins</div>
             <div className="text-sm opacity-80">
-              {user && user.coins >= 1 ? 'Ready to withdraw!' : 'Need 1 coin minimum'}
+              {user && user.coins >= 100 ? 'Ready to withdraw!' : 'Need 1 coin minimum'}
             </div>
           </button>
         </div>
