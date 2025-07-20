@@ -46,7 +46,7 @@ const RewardApp: React.FC = () => {
   // Ad loading state
   const [isAdLoading, setIsAdLoading] = useState(false);
   const [adError, setAdError] = useState('');
-  const [rewardedAd, setRewardedAd] = useState<any>(null);
+  const [rewardedAdReady, setRewardedAdReady] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -98,22 +98,12 @@ const RewardApp: React.FC = () => {
     setAdError('');
     
     try {
-      // Create rewarded ad instance
-      if (window.adsbygoogle) {
-        const ad = {
-          adUnitId: 'ca-app-pub-3689581405597356/6536518954',
-          loaded: false
-        };
-        
-        // Load the ad
-        window.adsbygoogle.push({});
-        
-        // Simulate ad loading completion
+      // Simulate ad loading process without calling adsbygoogle.push()
+      // The actual ad loading will happen when the ad page renders
+      setTimeout(() => {
         setIsAdLoading(false);
-        setRewardedAd(ad);
-      } else {
-        throw new Error('AdMob SDK not loaded');
-      }
+        setRewardedAdReady(true);
+      }, 1000);
     } catch (error) {
       console.error('Error loading ad:', error);
       setAdError('Failed to load advertisement. Please try again.');
@@ -186,12 +176,12 @@ const RewardApp: React.FC = () => {
   };
 
   const handleWatchAd = () => {
-    if (rewardedAd) {
+    if (rewardedAdReady) {
       // Show the ad
       setAdTimeRemaining(15);
       setIsWatchingAd(true);
       setCurrentPage('ad');
-      setRewardedAd(null);
+      setRewardedAdReady(false);
     } else {
       // Load ad first
       loadRewardedAd();
@@ -777,7 +767,7 @@ const RewardApp: React.FC = () => {
           >
             <div className="text-4xl mb-2">📺</div>
             <div className="text-xl mb-1">
-              {isAdLoading ? 'Loading Ad...' : rewardedAd ? 'Watch Video Ad' : 'Load Video Ad'}
+              {isAdLoading ? 'Loading Ad...' : rewardedAdReady ? 'Watch Video Ad' : 'Load Video Ad'}
             </div>
             <div className="text-sm opacity-80">
               {isAdLoading ? 'Loading real AdMob video' : 'Earn 1 coin • Real video ads'}
