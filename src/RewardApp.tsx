@@ -46,7 +46,7 @@ const RewardApp: React.FC = () => {
   // Ad loading state
   const [isAdLoading, setIsAdLoading] = useState(false);
   const [adError, setAdError] = useState('');
-  const [rewardedAdReady, setRewardedAdReady] = useState(false);
+  const [adLoaded, setAdLoaded] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -92,23 +92,54 @@ const RewardApp: React.FC = () => {
     return () => clearInterval(interval);
   }, [isWatchingAd, adTimeRemaining, user]);
 
-  // Load rewarded video ad
+  // Initialize AdMob and load rewarded video ad
   const loadRewardedAd = () => {
     setIsAdLoading(true);
     setAdError('');
+    setAdLoaded(false);
     
     try {
-      // Simulate ad loading process without calling adsbygoogle.push()
-      // The actual ad loading will happen when the ad page renders
+      // Initialize AdMob if not already done
+      if (typeof window.adsbygoogle === 'undefined') {
+        window.adsbygoogle = [];
+      }
+      
+      // Load the rewarded video ad
       setTimeout(() => {
-        setIsAdLoading(false);
-        setRewardedAdReady(true);
-      }, 1000);
+        try {
+          // Push ad configuration for rewarded video
+          window.adsbygoogle.push({
+            google_ad_client: "ca-app-pub-3940256099942544",
+            enable_page_level_ads: true
+          });
+          
+          setIsAdLoading(false);
+          setAdLoaded(true);
+        } catch (error) {
+          console.error('AdMob initialization error:', error);
+          setAdError('Failed to initialize ads. Please try again.');
+          setIsAdLoading(false);
+        }
+      }, 2000);
     } catch (error) {
       console.error('Error loading ad:', error);
       setAdError('Failed to load advertisement. Please try again.');
       setIsAdLoading(false);
     }
+  };
+
+  // Start watching ad with proper AdMob integration
+  const startWatchingAd = () => {
+    if (!adLoaded) {
+      setAdError('Ad not loaded yet. Please try again.');
+      return;
+    }
+    
+    // Start the ad timer and show ad page
+    setAdTimeRemaining(30); // Increased to 30 seconds for realistic ad duration
+    setIsWatchingAd(true);
+    setCurrentPage('ad');
+    setAdLoaded(false); // Reset for next ad
   };
 
   // Load user data on component mount
@@ -176,14 +207,9 @@ const RewardApp: React.FC = () => {
   };
 
   const handleWatchAd = () => {
-    if (rewardedAdReady) {
-      // Show the ad
-      setAdTimeRemaining(15);
-      setIsWatchingAd(true);
-      setCurrentPage('ad');
-      setRewardedAdReady(false);
+    if (adLoaded) {
+      startWatchingAd();
     } else {
-      // Load ad first
       loadRewardedAd();
     }
   };
@@ -401,71 +427,78 @@ const RewardApp: React.FC = () => {
           {/* Google AdMob Rewarded Video Ad Container */}
           <div className="relative bg-black rounded-xl overflow-hidden mb-6 border-2 border-purple-500/30 shadow-2xl shadow-purple-500/20">
             <div className="aspect-video flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
-              {/* Real AdMob Rewarded Video Ad */}
+              {/* AdMob Rewarded Video Ad */}
               <div className="w-full h-full relative">
-                {/* AdMob Video Ad Container */}
-                <div id="rewarded-video-ad" className="w-full h-full">
+                {/* Primary AdMob Video Ad */}
+                <div className="w-full h-full">
                   <ins className="adsbygoogle w-full h-full block"
                        style={{ display: 'block' }}
-                       data-ad-client="ca-app-pub-3689581405597356"
-                       data-ad-slot="6536518954"
-                       data-ad-format="fluid"
-                       data-layout-key="-gw-3+1f-3d+2z"
+                       data-ad-client="ca-app-pub-3940256099942544"
+                       data-ad-slot="5224354917"
+                       data-ad-format="auto"
                        data-full-width-responsive="true">
                   </ins>
+                  
+                  {/* Initialize this specific ad */}
+                  <script
+                    dangerouslySetInnerHTML={{
+                      __html: `
+                        try {
+                          (adsbygoogle = window.adsbygoogle || []).push({});
+                        } catch (e) {
+                          console.log('AdSense push error:', e);
+                        }
+                      `
+                    }}
+                  />
                 </div>
                 
-                {/* Initialize the ad */}
-                <script
-                  dangerouslySetInnerHTML={{
-                    __html: `
-                      if (window.adsbygoogle && window.adsbygoogle.loaded !== true) {
-                        (adsbygoogle = window.adsbygoogle || []).push({});
-                      }
-                    `
-                  }}
-                />
+                {/* Backup AdMob Video Ad */}
+                <div className="w-full h-full absolute top-0 left-0" style={{ zIndex: -1 }}>
+                  <ins className="adsbygoogle w-full h-full block"
+                       style={{ display: 'block' }}
+                       data-ad-client="ca-app-pub-3940256099942544"
+                       data-ad-slot="5224354917"
+                       data-ad-format="fluid"
+                       data-layout-key="-gw-3+1f-3d+2z">
+                  </ins>
+                  
+                  <script
+                    dangerouslySetInnerHTML={{
+                      __html: `
+                        setTimeout(() => {
+                          try {
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                          } catch (e) {
+                            console.log('Backup ad error:', e);
+                          }
+                        }, 1000);
+                      `
+                    }}
+                  />
+                </div>
                 
-                {/* Ad Controls Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none">
+                {/* Video Ad Simulation Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none">
                   <div className="absolute top-4 right-4 bg-red-600/90 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-mono border border-red-500/30">
                     ⏱️ {formatTime(adTimeRemaining)}
                   </div>
                   <div className="absolute top-4 left-4 bg-green-600/90 backdrop-blur-sm text-white px-3 py-2 rounded-lg border border-green-500/30">
-                    🎬 AdMob Video
+                    🎬 AdMob Rewarded Video
                   </div>
                   <div className="absolute bottom-4 left-4 bg-blue-600/90 backdrop-blur-sm text-white px-3 py-2 rounded-lg border border-blue-500/30 text-sm">
-                    Rewarded Video Advertisement
+                    ca-app-pub-3940256099942544/5224354917
+                  </div>
+                  
+                  {/* Video play indicator */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-4 animate-pulse">
+                      <div className="w-16 h-16 bg-white/80 rounded-full flex items-center justify-center">
+                        <div className="w-0 h-0 border-l-[20px] border-l-black border-y-[12px] border-y-transparent ml-1"></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Alternative Ad Container for better compatibility */}
-          <div className="relative bg-black rounded-xl overflow-hidden mb-6 border-2 border-purple-500/30 shadow-2xl shadow-purple-500/20">
-            <div className="aspect-video">
-              {/* Direct AdSense Integration */}
-              <div className="w-full h-full relative">
-                <ins className="adsbygoogle"
-                     style={{ display: 'block', width: '100%', height: '100%' }}
-                     data-ad-client="ca-pub-3689581405597356"
-                     data-ad-slot="6536518954"
-                     data-ad-format="fluid"
-                     data-full-width-responsive="true">
-                </ins>
-                
-                <script
-                  dangerouslySetInnerHTML={{
-                    __html: `
-                      try {
-                        (adsbygoogle = window.adsbygoogle || []).push({});
-                      } catch (e) {
-                        console.log('AdSense error:', e);
-                      }
-                    `
-                  }}
-                />
               </div>
             </div>
           </div>
@@ -474,11 +507,11 @@ const RewardApp: React.FC = () => {
           <div className="bg-gray-800/50 rounded-full h-4 mb-6 border border-purple-500/30 backdrop-blur-sm">
             <div 
               className="bg-gradient-to-r from-purple-500 via-pink-500 to-green-500 h-4 rounded-full transition-all duration-1000 flex items-center justify-end pr-2 shadow-lg shadow-purple-500/25"
-              style={{ width: `${((15 - adTimeRemaining) / 15) * 100}%` }}
+              style={{ width: `${((30 - adTimeRemaining) / 30) * 100}%` }}
             >
               {adTimeRemaining <= 5 && (
                 <span className="text-white text-xs font-bold">
-                  {Math.round(((15 - adTimeRemaining) / 15) * 100)}%
+                  {Math.round(((30 - adTimeRemaining) / 30) * 100)}%
                 </span>
               )}
             </div>
@@ -487,8 +520,8 @@ const RewardApp: React.FC = () => {
           <div className="text-center text-purple-300 bg-gray-900/80 backdrop-blur-xl p-4 rounded-lg border border-purple-500/30">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               <div className="text-center">
-                <div className="text-purple-400 mb-1">🎬 Real Video Ads</div>
-                <div>Google AdMob network</div>
+                <div className="text-purple-400 mb-1">🎬 AdMob Video Ads</div>
+                <div>Test Ad Unit Active</div>
               </div>
               <div className="text-center">
                 <div className="text-pink-400 mb-1">💰 Rewarded</div>
@@ -496,7 +529,7 @@ const RewardApp: React.FC = () => {
               </div>
               <div className="text-center">
                 <div className="text-green-400 mb-1">⏱️ Duration</div>
-                <div>15-30 seconds typical</div>
+                <div>30 seconds</div>
               </div>
             </div>
           </div>
@@ -763,14 +796,14 @@ const RewardApp: React.FC = () => {
           <button
             onClick={handleWatchAd}
             disabled={isAdLoading}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-6 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 border-2 border-purple-500/50 shadow-lg shadow-purple-500/25"
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-bold py-6 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 disabled:hover:scale-100 border-2 border-purple-500/50 shadow-lg shadow-purple-500/25"
           >
             <div className="text-4xl mb-2">📺</div>
             <div className="text-xl mb-1">
-              {isAdLoading ? 'Loading Ad...' : rewardedAdReady ? 'Watch Video Ad' : 'Load Video Ad'}
+              {isAdLoading ? 'Loading AdMob...' : adLoaded ? 'Watch Video Ad' : 'Load AdMob Video'}
             </div>
             <div className="text-sm opacity-80">
-              {isAdLoading ? 'Loading real AdMob video' : 'Earn 1 coin • Real video ads'}
+              {isAdLoading ? 'Connecting to AdMob...' : 'Earn 1 coin • AdMob Rewarded Video'}
             </div>
           </button>
 
@@ -793,7 +826,7 @@ const RewardApp: React.FC = () => {
             {isAdLoading && (
               <div className="flex items-center space-x-3 text-blue-400">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-400"></div>
-                <span>Loading Google AdMob rewarded video ad...</span>
+                <span>Loading AdMob rewarded video (ca-app-pub-3940256099942544/5224354917)...</span>
               </div>
             )}
             {adError && (
@@ -807,23 +840,23 @@ const RewardApp: React.FC = () => {
 
         {/* Instructions */}
         <div className="mt-8 bg-gray-900/80 backdrop-blur-xl rounded-xl p-6 border border-purple-500/30">
-          <h3 className="text-lg font-bold mb-4">📋 How it Works (Real AdMob Video Ads)</h3>
+          <h3 className="text-lg font-bold mb-4">📋 How it Works (AdMob Integration)</h3>
           <div className="space-y-2 text-purple-200">
             <div className="flex items-center space-x-3">
               <span className="text-purple-400">1️⃣</span>
-              <span>Watch real video advertisements from Google AdMob network</span>
+              <span>Click "Load AdMob Video" to initialize the ad unit</span>
             </div>
             <div className="flex items-center space-x-3">
               <span className="text-purple-400">2️⃣</span>
-              <span>Complete the full video to earn 1 coin reward</span>
+              <span>Watch the 30-second AdMob rewarded video advertisement</span>
             </div>
             <div className="flex items-center space-x-3">
               <span className="text-purple-400">3️⃣</span>
-              <span>Collect 100 coins to unlock withdrawal</span>
+              <span>Complete the full video to earn 1 coin reward</span>
             </div>
             <div className="flex items-center space-x-3">
               <span className="text-purple-400">4️⃣</span>
-              <span>Provide details and verify OTP to withdraw</span>
+              <span>Collect 100 coins to unlock withdrawal option</span>
             </div>
           </div>
         </div>
