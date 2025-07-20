@@ -107,12 +107,6 @@ const RewardApp: React.FC = () => {
       // Load the rewarded video ad
       setTimeout(() => {
         try {
-          // Push ad configuration for rewarded video
-          window.adsbygoogle.push({
-            google_ad_client: "ca-app-pub-3940256099942544",
-            enable_page_level_ads: true
-          });
-          
           setIsAdLoading(false);
           setAdLoaded(true);
         } catch (error) {
